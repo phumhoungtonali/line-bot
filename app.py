@@ -2,36 +2,29 @@ from flask import Flask, request
 
 app = Flask(__name__)
 
-# ===== LINE WEBHOOK =====
 @app.route("/callback", methods=["POST"])
 def callback():
-    body = request.json
+    body = request.get_json()
 
     print("\n=== FULL EVENT ===")
     print(body)
 
-    if "events" in body:
+    if body and "events" in body:
         for e in body["events"]:
             print("\n--- EVENT ---")
             print("type:", e.get("type"))
 
             source = e.get("source", {})
-            print("source:", source)
+            print("groupId:", source.get("groupId"))
 
-            group_id = source.get("groupId")
-            user_id = source.get("userId")
+    return "OK", 200
 
-            print("groupId:", group_id)
-            print("userId:", user_id)
 
-    return "OK"
-
-# ===== HOME TEST =====
 @app.route("/", methods=["GET"])
 def home():
-    return "LINE BOT IS RUNNING"
+    return "LINE BOT IS RUNNING", 200
 
-# ===== IMPORTANT: FOR RENDER / CLOUD =====
+
 import os
 
 if __name__ == "__main__":
